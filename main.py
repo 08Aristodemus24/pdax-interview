@@ -1,0 +1,64 @@
+from use_case import UseCase
+from infrastructure import AccountRepository
+import ast   
+from argparse import ArgumentParser
+
+def app(acc_repo: AccountRepository):
+    # while is_running is true app will keep running
+    is_running = True
+
+    # instantiate use case object as well so that as user
+    # keeps on making transactions the use case account repository
+    # is also updated
+    use_case = UseCase(acc_repo=acc_repo)
+
+    while is_running:
+        # try:
+            # prompt user what task they would want to do
+            task = int(input("\nwhat would you like to accomplish?\n0 to create account\n1 to make transaction\n2 to generate account statements\nanswer: "))
+            
+            if task == 0:
+                # if a user decides to create an account for given
+                # a customer id
+                customer_id = int(input("\nenter your customer_id (any number): "))
+                name = input("enter your name (larry): ")
+                email = input("enter your email (michaelaveuc571@gmail.com): ")
+                phone_number = input("enter your phone number (09938238207): ")
+
+                # create account
+                account = use_case.create_account(customer_id, name, email, phone_number)
+
+                # save newly created account
+                use_case.acc_repo.save_account(account)
+                
+                print(use_case.acc_repo)
+
+            elif task == 1:
+                # if a user decides to make a transactions
+                account_id = input("\nenter your account_id (your account id): ")
+                amount = float(input("enter the amount for your transaction (100.00): "))
+                transaction_type = input("enter transaction type (deposit|withdraw): ")
+
+                # make transaction
+                # note that after transaction the  
+                use_case.make_transaction(account_id, amount, transaction_type)
+
+                print(use_case.acc_repo)
+
+            elif task == 2:
+                pass
+            
+
+            is_running = False if input("\nwould you like to end transaction (yes|no)? ") == "yes" else True
+        # except ValueError:
+        #     print("\nYou entered a string please enter a number for the corresponding task you want to accomplish\n")
+
+if __name__ == "__main__":
+    # initialize account repository which will be empty at first
+    acc_repo = AccountRepository()
+
+    # run app
+    app(acc_repo)
+
+    
+
