@@ -14,7 +14,7 @@ def run_app():
     use_case = UseCase()
 
     while is_running:
-        # try:
+        try:
             # prompt user what task they would want to do
             task = int(input("\nwhat would you like to accomplish?\n0 to create account\n1 to make transaction\n2 to generate account statements\nanswer: "))
             
@@ -26,12 +26,14 @@ def run_app():
                 email = input("enter your email (michaelaveuc571@gmail.com): ")
                 phone_number = input("enter your phone number (09938238207): ")
 
-                # create account
+                # create account 
+                # if no account is reated account will be None
                 account = use_case.create_account(customer_id, name, email, phone_number)
 
-                # save newly created account
-                use_case.acc_repo.save_account(account)
-                
+                if account != None:
+                    # save newly created account
+                    use_case.acc_repo.save_account(account)
+                    
                 print(use_case.acc_repo)
 
             elif task == 1:
@@ -48,11 +50,21 @@ def run_app():
 
             elif task == 2:
                 # if user decides to generate an accounts statement
-                pass
+                account_id = input("\nenter your account_id (your account id): ")
+
+                # geneerate account statement
+                statement = use_case.generate_account_statements(account_id)
+
+                # print statement
+                print(statement)
 
             is_running = False if input("\nwould you like to end transaction (yes|no)? ") == "yes" else True
-        # except ValueError:
-        #     print("\nYou entered a string please enter a number for the corresponding task you want to accomplish\n")
+        except ValueError as e:
+            print(f"\nError {e} occured.\n")
+
+        except KeyError as e:
+            print(f"\nError {e} occured.\n")
+
 
 if __name__ == "__main__":
     # run app

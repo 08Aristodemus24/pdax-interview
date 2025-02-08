@@ -25,8 +25,10 @@ class AccountRepository:
         """
 
         matches = [i for i, account in enumerate(self.accounts) if account.account_id == account_id]
+        if len(matches) == 0:
+            raise KeyError("You are attempting to generate an account statement with a non-existent account id") 
+        
         account_index = matches[-1]
-
         return self.accounts[account_index]
 
     def find_accounts_by_customer_id(self, customer_id) -> list:

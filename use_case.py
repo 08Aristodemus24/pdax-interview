@@ -22,15 +22,17 @@ class UseCase:
         phone number cannot be duplicated
         """
 
-        # flags if customer id name, email, and phone number can be permitted
-        # to be pushed in customer repo and account repo
-        cust_permitted = False
-        acc_permitted = False
-
         # make checks first if customer_id or email or phone number 
         # already exists in customer repo
         all_customers = self.cust_repo.get_all_customers()
 
+        # flags if customer id name, email, and phone number can be permitted
+        # to be pushed in customer repo and account repo. Note if customers repo
+        # is still empty permit customer and account creation initially 
+        cust_permitted = True if len(all_customers) == 0 else False
+        acc_permitted = True if len(all_customers) == 0 else False
+
+        # this will loop should there be a customer in the cust repo
         for customer in all_customers:
             if customer.name != name:
                 # if a customer with customer id, email, and phone number
@@ -39,14 +41,26 @@ class UseCase:
                 if customer.customer_id != customer_id and customer.email != email and customer.phone_number != phone_number:
                     cust_permitted = True
                     acc_permitted = True
+                else:
+                    raise KeyError("Customer and account will not created due to duplicate customer_id, email, or phone number")
                 
             else:
+                # if a customer with customer id, email, and phone number
+                # does not already exist and with a different name create
+                # customer and create account
+                if customer.customer_id != customer_id and customer.email != email and customer.phone_number != phone_number:
+                    cust_permitted = True
+                    acc_permitted = True
+
                 # if a customer with same customer id, email, and phone number
                 # exists already and with the same name don't create customer
                 # but still create account
-                if customer.customer_id == customer_id and customer.email == email and customer.phone_number == phone_number:
+                elif customer.customer_id == customer_id and customer.email == email and customer.phone_number == phone_number:
                     acc_permitted = True
 
+                else:
+                    raise KeyError("Customer and account will not created due to duplicate name, customer_id, email, phone_number")
+                
         # should customer information be valid proceed with customer creation
         if cust_permitted:
             # instantiate a customer class
@@ -59,6 +73,7 @@ class UseCase:
 
             # save customer object
             self.cust_repo.save_customer(customer)
+        
 
         if acc_permitted:
             # get all accounts of customer through their customer id
@@ -105,6 +120,8 @@ class UseCase:
         transaction_type as input and updates the account 
         balance accordingly
         """
+        if len(self.acc_repo) == 0:
+            raise KeyError("You are attempting to make a transaction without creating yet any account")
 
         # find account by id
         account = self.acc_repo.find_account_by_id(account_id)
@@ -123,6 +140,8 @@ class UseCase:
         by taking account_id as input and returns a statement
         string containing transaction details for the given account.
         """
+        if len(self.acc_repo) == 0:
+            raise KeyError("You are attempting to generate an account statement without creating yet any account")
 
         # find account by id
         account = self.acc_repo.find_account_by_id(account_id)
@@ -134,7 +153,22 @@ class UseCase:
         account_num = account.account_num
         balance = account.get_balance()
 
-        # customer
+        # get customer information
+        customer = self.cust_repo.find_customer_by_id(customer_id)
+        customer_name = customer.name
+        customer_email = customer.email
+        customer_phone = customer.phone_number
+
+        return f"""
+        statement for account {account_id}:
+            account number: {account_num}
+            name: {customer_name}
+            email: {customer_email}
+            mobile no.: {customer_phone}
+
+        current balance: {balance}
+        """
+
 
 
 
