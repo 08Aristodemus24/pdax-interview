@@ -27,7 +27,7 @@ class AccountRepository:
         matches = [i for i, account in enumerate(self.accounts) if account.account_id == account_id]
         account_index = matches[-1]
 
-        return account_index, self.accounts[account_index]
+        return self.accounts[account_index]
 
     def find_accounts_by_customer_id(self, customer_id) -> list:
         """
@@ -60,7 +60,34 @@ class CustomerRepository:
 
     def save_customer(self, customer):
         """
-        saves a customer given Customer object
+        saves a customer given the Customer object
         """
 
         self.customers.append(customer)
+
+    def find_customer_by_id(self, customer_id: int):
+        """
+        retrieves a customer through the customer id
+        """
+
+        matches = [i for i, customer in enumerate(self.customers) if customer.customer_id == customer_id]
+        customer_index = matches[-1]
+
+        return self.customers[customer_index]
+    
+    def get_all_customers(self):
+        return self.customers
+    
+    def __len__(self):
+        return len(self.customers)
+    
+    def __getitem__(self, key):
+        return self.customers[key]
+    
+    def __setitem__(self, key, value):
+        self.customers[key] = value
+
+    def __repr__(self):
+        customers_str = "\n".join([str(customer.__dict__) for customer in self.customers])
+        log = f"\ncurrent customers: \n{customers_str}"
+        return log

@@ -1,16 +1,17 @@
 from use_case import UseCase
-from infrastructure import AccountRepository
+from infrastructure import AccountRepository, CustomerRepository
 import ast   
 from argparse import ArgumentParser
 
-def app(acc_repo: AccountRepository):
+def run_app():
+    
     # while is_running is true app will keep running
     is_running = True
 
     # instantiate use case object as well so that as user
     # keeps on making transactions the use case account repository
     # is also updated
-    use_case = UseCase(acc_repo=acc_repo)
+    use_case = UseCase()
 
     while is_running:
         # try:
@@ -46,19 +47,16 @@ def app(acc_repo: AccountRepository):
                 print(use_case.acc_repo)
 
             elif task == 2:
+                # if user decides to generate an accounts statement
                 pass
-            
 
             is_running = False if input("\nwould you like to end transaction (yes|no)? ") == "yes" else True
         # except ValueError:
         #     print("\nYou entered a string please enter a number for the corresponding task you want to accomplish\n")
 
 if __name__ == "__main__":
-    # initialize account repository which will be empty at first
-    acc_repo = AccountRepository()
-
     # run app
-    app(acc_repo)
+    run_app()
 
     
 
